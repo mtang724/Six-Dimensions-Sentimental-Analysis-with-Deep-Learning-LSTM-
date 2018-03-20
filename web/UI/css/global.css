@@ -1,0 +1,30 @@
+
+.bg{
+	background:url('../images/bg.jpg')
+	no-repeat;
+	background-color:#cba9ad;
+	background-attachment:fixed;
+	width:100%;
+	height: 200vh;
+}
+
+.main{
+	background-color: #F5F5F5;
+	height: 180vh;
+}
+
+.movieDetail{
+	/* background-color: #F5F5F5; */
+	width: 250px;
+	height: 550px
+}
+
+.cardImage{
+	/* background-image: url('../images/movie1.png'); */
+	width: 100%;
+	height: 350px
+}
+
+.listInfo{
+	width: 250px;
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html land="en">
+<head>
+	<title>log in</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link href="css/login.css" type="text/css" rel="stylesheet">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script scr="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+</head>
+
+<body>
+<div class="container-fluid bg">
+	<div class="row">
+		<div class="col-md-4 col-sm-4 col-xl-12"></div>
+		<div class="col-md-4 col-sm-4 col-xl-12">
+			<!-- form -->
+			<form class="form-container">
+			<h1 align="center" >Log in</h1>
+		</br>
+  				<div class="form-group">
+   					<label for="InputEmail">Email</label>
+  					<input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+  				</div>
+ 				<div class="form-group">
+    				<label for="InputPassword">Password</label>
+    				<input type="password" class="form-control" id="InputPassword" placeholder="Password">
+  				</div>
+  				<div class="form-rememberMe">
+  					<input type="checkbox" class="form-check-input" id="Check">
+    				<label class="form-rememberMe-label" for="rememberMe">Remember me</label>
+  				</div>
+  				<button type="submit" class="btn btn-primary btn-block">Submit</button>
+				</br>
+  				
+  				<div>
+  					<div style="float: left;"><a href="url">Forget Password</a></div>
+  					<div style="float: right"><a href="url">Sign up</a></div><div style="clear: both;"></div>
+  				</div>
+  				
+  				</form>
+  				</br></br></br></br></br></br>
+  				<p align="center">@2018-3-22-Esther</p>
+
+		</div>
+		<div class="col-md-4 col-sm-4 col-xl-12">
+		</div>
+	</div>
+</div>
+
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+ 		$("submit").click(function(){
+    		$("submit").hide();
+ 	 	});
+	});
+</script>
+
+</html>
