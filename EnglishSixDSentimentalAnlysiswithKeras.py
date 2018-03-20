@@ -10,11 +10,23 @@ import collections
 import nltk
 import numpy as np
 from keras.utils import np_utils
+from gensim.models.word2vec import Word2Vec
+from gensim.corpora.dictionary import Dictionary
+import pickle
+
+# 创建词语字典，并返回word2vec模型中词语的索引，词向量
+def create_dictionaries(p_model):
+    gensim_dict = Dictionary()
+    gensim_dict.doc2bow(p_model.wv.vocab.keys(), allow_update=True)
+    w2indx = {v: k + 1 for k, v in gensim_dict.items()}  # 词语的索引，从1开始编号
+    w2vec = {word: model[word] for word in w2indx.keys()}  # 词语的词向量
+    return w2indx, w2vec
 
 ## EDA 
 maxlen = 0
 word_freqs = collections.Counter()
 num_recs = 0
+sentences = []
 with open('./Jan9-2012-tweets-clean.txt','r+',encoding='UTF-8') as f:
     for line in f:
         chunks = line.strip().split("\t")
@@ -22,6 +34,7 @@ with open('./Jan9-2012-tweets-clean.txt','r+',encoding='UTF-8') as f:
             userID = chunks[0]
             sentence = chunks[1]
             labelStr = chunks[2][3:]
+            sentences.append(sentence)
             words = nltk.word_tokenize(sentence.lower())
             if len(words) > maxlen:
                 maxlen = len(words)
@@ -31,7 +44,9 @@ with open('./Jan9-2012-tweets-clean.txt','r+',encoding='UTF-8') as f:
 print('max_len ',maxlen)
 print('nb_words ', len(word_freqs))
 
-## 准备数据
+model.load('Word2Vec.model')  # 保存模型
+
+# 准备数据
 MAX_FEATURES = 20000
 MAX_SENTENCE_LENGTH = 60
 vocab_size = min(MAX_FEATURES, len(word_freqs)) + 2
