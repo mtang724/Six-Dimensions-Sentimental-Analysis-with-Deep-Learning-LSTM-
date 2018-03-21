@@ -12,8 +12,8 @@ import collections
 import nltk
 import numpy as np
 from keras.utils import np_utils
-from gensim.models.word2vec import Word2Vec
-from gensim.corpora.dictionary import Dictionary
+# from gensim.models.word2vec import Word2Vec
+# from gensim.corpora.dictionary import Dictionary
 import pickle
 import jieba
 
@@ -103,7 +103,7 @@ for file in files: #遍历文件夹
 								seqs.append(word2index["UNK"])
 						X[i] = seqs
 						i += 1
-						label = [0,0,0,0,0]
+						label = [0,0,0,0,0,0]
 						for emotion in paragraph:
 							fildName = emotion.tag
 							if(fildName == 'Joy' and float(emotion.text)>0):
@@ -116,25 +116,25 @@ for file in files: #遍历文件夹
 								label[3] = float(emotion.text)
 							if(fildName == 'Hate' and float(emotion.text)>0):
 								label[4] = float(emotion.text)
-							# if(fildName == 'Love' and float(emotion.text)>0):
-							# 	label[5] = float(emotion.text)
+							if(fildName == 'Love' and float(emotion.text)>0):
+								label[5] = float(emotion.text)
 						y.append(label)
 					
 y = np.array(y)
 X = sequence.pad_sequences(X, maxlen=MAX_SENTENCE_LENGTH)
 ## 数据划分
-Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.1, random_state=42)
+Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.2, random_state=42)
 # 网络构建
 EMBEDDING_SIZE = 128
 HIDDEN_LAYER_SIZE = 64
-BATCH_SIZE = 294
-NUM_EPOCHS = 300
+BATCH_SIZE = 500
+NUM_EPOCHS = 20
 model = Sequential()
 model.add(Embedding(vocab_size, EMBEDDING_SIZE,input_length=MAX_SENTENCE_LENGTH))
-model.add(LSTM(HIDDEN_LAYER_SIZE, dropout=0.2, recurrent_dropout=0.2))
-model.add(Dense(5))
+model.add(LSTM(HIDDEN_LAYER_SIZE, dropout=0.5, recurrent_dropout=0.5))
+model.add(Dense(len(label)))
 model.add(Activation("sigmoid"))
-adam = optimizers.Adam(lr=1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.5, amsgrad=False)
+adam = optimizers.Adam(lr=2, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.5, amsgrad=False)
 # model.compile(loss='mean_squared_error', optimizer=sgd,metrics=["accuracy"])
 model.compile(loss="categorical_crossentropy", optimizer='adam',metrics=["accuracy"])
 ## 网络训练
@@ -142,14 +142,14 @@ model.fit(Xtrain, ytrain, batch_size=BATCH_SIZE, epochs=NUM_EPOCHS,validation_da
 ## 预测
 score, acc = model.evaluate(Xtest, ytest, batch_size=BATCH_SIZE)
 print("\nTest score: %.3f, accuracy: %.3f" % (score, acc))
-print('{}   {}      {}'.format('预测','真实','句子'))
+print('{}   {}      {}'.format('Prediction','Real Value','Sentence'))
 for i in range(5):
     idx = np.random.randint(len(Xtest))
     xtest = Xtest[idx].reshape(1,MAX_SENTENCE_LENGTH)
     ylabel = ytest[idx]
     ypred = model.predict(xtest)[0]
     sent = " ".join([index2word[x] for x in xtest[0] if x != 0])
-    print(' {}      {}     {}'.format(np.round(ypred), ylabel, sent))
+    print(' {}      {}     {}'.format(ypred, ylabel, sent))
 ##### 自己输入
 INPUT_SENTENCES = ['我爱你','我讨厌毕设','我很开心']
 XX = np.empty(len(INPUT_SENTENCES),dtype=list)
@@ -167,7 +167,7 @@ for sentence in  INPUT_SENTENCES:
 
 XX = sequence.pad_sequences(XX, maxlen=MAX_SENTENCE_LENGTH)
 labels = [x for x in model.predict(XX) ]
-label2word = {4:'Hate',3:'anger',2:'surprise',1:'sadness', 0:'joy'}
+label2word = {5:'Love',4:'Hate',3:'anger',2:'surprise',1:'sadness', 0:'joy'}
 for i in range(len(INPUT_SENTENCES)):
     p = labels[i].tolist().index(max(labels[i].tolist()))
     print('{}   {}		{}'.format(label2word[p], INPUT_SENTENCES[i],labels[i][p]))

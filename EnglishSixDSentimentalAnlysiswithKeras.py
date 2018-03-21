@@ -10,17 +10,9 @@ import collections
 import nltk
 import numpy as np
 from keras.utils import np_utils
-from gensim.models.word2vec import Word2Vec
-from gensim.corpora.dictionary import Dictionary
 import pickle
+from keras.models import load_model
 
-# 创建词语字典，并返回word2vec模型中词语的索引，词向量
-def create_dictionaries(p_model):
-    gensim_dict = Dictionary()
-    gensim_dict.doc2bow(p_model.wv.vocab.keys(), allow_update=True)
-    w2indx = {v: k + 1 for k, v in gensim_dict.items()}  # 词语的索引，从1开始编号
-    w2vec = {word: model[word] for word in w2indx.keys()}  # 词语的词向量
-    return w2indx, w2vec
 
 ## EDA 
 maxlen = 0
@@ -44,7 +36,6 @@ with open('./Jan9-2012-tweets-clean.txt','r+',encoding='UTF-8') as f:
 print('max_len ',maxlen)
 print('nb_words ', len(word_freqs))
 
-model.load('Word2Vec.model')  # 保存模型
 
 # 准备数据
 MAX_FEATURES = 20000
@@ -112,17 +103,22 @@ model.compile(loss="categorical_crossentropy", optimizer='adam',metrics=["accura
 model.fit(Xtrain, ytrain, batch_size=BATCH_SIZE, epochs=NUM_EPOCHS,validation_data=(Xtest, ytest))
 ## 预测
 score, acc = model.evaluate(Xtest, ytest, batch_size=BATCH_SIZE)
+
+model.save('my_model.h5')
+
 print("\nTest score: %.3f, accuracy: %.3f" % (score, acc))
-print('{}   {}      {}'.format('预测','真实','句子'))
+print('{}   {}      {}'.format('Prediction','True Value','Sentence'))
 for i in range(5):
     idx = np.random.randint(len(Xtest))
     xtest = Xtest[idx].reshape(1,60)
     ylabel = ytest[idx]
     ypred = model.predict(xtest)[0]
     sent = " ".join([index2word[x] for x in xtest[0] if x != 0])
-    print(' {}      {}     {}'.format(np.round(ypred), ylabel, sent))
+    print(' {}      {}     {}'.format(ypred, ylabel, sent))
 ##### 自己输入
-INPUT_SENTENCES = ['I love reading.','You are so boring.','I am crying']
+INPUT_SENTENCES = []
+inputSentence = '';
+
 XX = np.empty(len(INPUT_SENTENCES),dtype=list)
 i=0
 for sentence in  INPUT_SENTENCES:
