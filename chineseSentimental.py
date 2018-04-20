@@ -16,6 +16,7 @@ from keras.utils import np_utils
 # from gensim.corpora.dictionary import Dictionary
 import pickle
 import jieba
+from keras.models import load_model
 
 path = "./CEC_emotionCoprus" #文件夹目录  
 files= os.listdir(path) #得到文件夹下的所有文件名称  
@@ -128,7 +129,7 @@ Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.2, random_stat
 EMBEDDING_SIZE = 128
 HIDDEN_LAYER_SIZE = 64
 BATCH_SIZE = 500
-NUM_EPOCHS = 20
+NUM_EPOCHS = 5000
 model = Sequential()
 model.add(Embedding(vocab_size, EMBEDDING_SIZE,input_length=MAX_SENTENCE_LENGTH))
 model.add(LSTM(HIDDEN_LAYER_SIZE, dropout=0.5, recurrent_dropout=0.5))
@@ -141,6 +142,7 @@ model.compile(loss="categorical_crossentropy", optimizer='adam',metrics=["accura
 model.fit(Xtrain, ytrain, batch_size=BATCH_SIZE, epochs=NUM_EPOCHS,validation_data=(Xtest, ytest))
 ## 预测
 score, acc = model.evaluate(Xtest, ytest, batch_size=BATCH_SIZE)
+model.save('my_model.h5')
 print("\nTest score: %.3f, accuracy: %.3f" % (score, acc))
 print('{}   {}      {}'.format('Prediction','Real Value','Sentence'))
 for i in range(5):
